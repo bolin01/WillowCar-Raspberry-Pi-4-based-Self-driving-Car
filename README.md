@@ -5,4 +5,5 @@ The project is based on course project of ME599: Self-driving Car at University 
 (1) Finish a pre-defined track as fast as possible by using Free Time Optimization   
 (2) Avoid random obstables along the track by using Model Predictive Control (MPC)   
    
-   
+## This Project 
+ 
