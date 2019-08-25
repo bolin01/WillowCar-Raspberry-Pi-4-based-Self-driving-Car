@@ -1,5 +1,5 @@
 Header header
 # way-points
-float64 right_wp
-float64 mid_wp
-float64 left_wp
+float64[2] right_wp   # (X, Y)
+float64[2] mid_wp     # (X, Y)
+float64[2] left_wp    # (X, Y)

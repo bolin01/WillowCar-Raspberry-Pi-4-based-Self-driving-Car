@@ -11,6 +11,7 @@ add_message_files(
   DIRECTORY msg/perception/
   FILES
   RoadCondition.msg
+  RoadConditionVector.msg
   ObstacleRect.msg
 )
 
