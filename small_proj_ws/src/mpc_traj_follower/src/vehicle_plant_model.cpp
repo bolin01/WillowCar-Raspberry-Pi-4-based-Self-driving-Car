@@ -5,7 +5,7 @@ namespace mpc_traj_follower {
 VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
 {   
     /* ROS */
-    sub_actuation_ = nh_.subscribe("/actuation", 10, &actuationCallback, this);     // receive from pnc_node
+    sub_actuation_ = nh_.subscribe("/actuation", 10, &VehiclePlantModel::actuationCallback, this);     // receive from pnc_node
     pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish to pnc_node and perception_node
     
     state_pos_x_ = 0.0;
@@ -18,8 +18,10 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     states_traj_.push_back( std::vector<float>(6, 0.0) ); // push a 6-element all-zero vector into states_traj_
     traj_vt_size_ = 1;
 
-    ROS_INFO("Initialized vehicle_plant_model_node !");
+    ROS_INFO("Initialized vehicle_plant_model_node!");
 }
+
+VehiclePlantModel::~VehiclePlantModel() {}
 
 void VehiclePlantModel::actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg)
 {

@@ -15,7 +15,8 @@ namespace mpc_traj_follower {
 class VehiclePlantModel {
   public:
     VehiclePlantModel(ros::NodeHandle& nh);
-
+    ~VehiclePlantModel();
+  
   private:
     /* ROS */
     ros::NodeHandle  nh_;                         // basic ROS NodeHandle
@@ -38,10 +39,9 @@ class VehiclePlantModel {
     int traj_vt_size_;
 
     /* Params */
-    // TODO: construct a 6-DOF bicycle as the vehicle plant model
+    // TODO: construct a 6-DOF bicycle model as the vehicle plant model
 
     void actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg);
-
 };
 
 
