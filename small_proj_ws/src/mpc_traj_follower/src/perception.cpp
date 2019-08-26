@@ -72,6 +72,64 @@ void Perception::parseRoadMapLine(const std::string& line)
     waypoints_.push_back(wp);
 }
 
+float Perception::distance(float x1, float y1, float x2, float y2)
+{
+    return sqrtf32((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+}
+
+float Perception::distanceToVehicle(int index)
+{
+    // Compute the distance between vehicle and #index waypoint
+    // We have three points (left, right and center) and we use the minimal distance among the three
+    assert (index >= 0 && index < waypoints_.size());
+    float dist1 = distance(state_pos_x_, state_pos_y_, waypoints_[index][0], waypoints_[index][1]);
+    float dist2 = distance(state_pos_x_, state_pos_y_, waypoints_[index][2], waypoints_[index][3]);
+    float dist3 = distance(state_pos_x_, state_pos_y_, waypoints_[index][4], waypoints_[index][5]);
+    return std::min({dist1, dist2, dist3});
+}
+
+int Perception::getNextWaypointIndex()
+{
+    int index = 0, min_dist = INT_MAX;
+    for (size_t i=0; i<waypoints_.size(); ++i)
+    {
+        int dist = distanceToVehicle(index);
+        if (dist < min_dist)
+        {
+            min_dist = dist;
+            index = i;
+        }
+    }
+
+    // We return the waypoint index that is 'ahead' of vehicle
+    float diff_x = waypoints_[index][4] - state_pos_x_;
+    float diff_y = waypoints_[index][5] - state_pos_y_;
+    float cos_x = std::cos(waypoints_[index][6]), sin_x = std::sin(waypoints_[index][6]);
+    return diff_x*cos_x + diff_y*sin_x > 0 ? index : index+1;
+}
+
+std::vector<std::vector<float>> Perception::getWaypoints(int index)
+{
+    double distance_can_see;
+    nh_.getParam("distance_can_see", distance_can_see);
+    double dist = 0.0;
+    std::vector<std::vector<float>> wp;
+    wp.push_back(waypoints_[index]);
+    for (int i=index+1; i<waypoints_.size(); ++i)
+    {
+        auto wp0 = waypoints_[index-1];
+        auto wp1 = waypoints_[index];
+        dist += distance(wp0[4], wp0[5], wp1[4], wp1[5]);
+        
+        // Return all waypoints here if distance exceeds the maximum distance can see
+        if (dist > distance_can_see)
+            return wp;
+        
+        wp.push_back(wp1);
+    }
+    return wp;
+}
+
 bool Perception::preparePerceptionMsg(double pos_x, double pos_y, double yaw_ang)
 {
     /** TODO List: 
