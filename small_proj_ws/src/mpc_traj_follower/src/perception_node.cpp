@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     mpc_traj_follower::Perception perception_node(nh);
 
     // Explicitly control the perception node work at 40 Hz
-    ros::Rate loop_rate(40);
+    ros::Rate loop_rate(1);
 
     while ( ros::ok() )
     {

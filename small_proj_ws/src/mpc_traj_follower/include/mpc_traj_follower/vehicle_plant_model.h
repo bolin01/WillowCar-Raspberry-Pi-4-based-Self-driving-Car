@@ -16,6 +16,9 @@ class VehiclePlantModel {
   public:
     VehiclePlantModel(ros::NodeHandle& nh);
     ~VehiclePlantModel();
+
+    // Publish vehicle state - It is made public only for testing purpose
+    void publishVehicleMsg(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate);
   
   private:
     /* ROS */
