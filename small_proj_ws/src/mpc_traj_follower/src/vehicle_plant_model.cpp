@@ -78,7 +78,7 @@ void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x,
     vstate.yaw_rate = yaw_rate;
 
     pub_cur_state_.publish(vstate);
-    ROS_INFO("Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
+    ROS_INFO("Plant - Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
 }
 
 

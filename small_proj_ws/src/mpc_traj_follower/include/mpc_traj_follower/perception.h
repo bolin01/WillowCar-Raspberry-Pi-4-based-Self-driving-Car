@@ -12,6 +12,7 @@
 #include <hkj_msgs/RoadCondition.h>
 #include <iostream>
 #include <climits>
+#include <mutex>
 
 namespace mpc_traj_follower {
 
@@ -55,14 +56,14 @@ class Perception {
     void parseRoadMapLine(const std::string& line);  // Helper function called in parseRoadMap
 
     // vehicle state
-    bool new_veh_state_;                                    // if a new vehicle state is received
-    std::vector<float> received_veh_state_;                 // vehicle state received from plant_model_node
-    float state_pos_x_;                                     // state: global position x  [m]
-    float state_pos_y_;                                     // state: global position y  [m]
-    float state_yaw_ang_;                                   // state: yaw andgle         [rad]
-    int getNextWaypointIndex();                             // Return the closest waypoint to vehicle current position
-    float distanceToVehicle(int index);                     // Helper function called in getNextWaypointIndex
-    float distance(float x1, float y1, float x2, float y2); // Helper function called in distanceToVehicle
+    std::mutex mtx;                                          // Locked in both subscriber callback and publisher
+    std::vector<float> received_veh_state_;                  // vehicle state received from plant_model_node
+    float state_pos_x_;                                      // state: global position x  [m]
+    float state_pos_y_;                                      // state: global position y  [m]
+    float state_yaw_ang_;                                    // state: yaw andgle         [rad]
+    int getNextWaypointIndex();                              // Return the closest waypoint to vehicle current position
+    float distanceToVehicle(int index);                      // Helper function called in getNextWaypointIndex
+    float distance(float x1, float y1, float x2, float y2);  // Helper function called in distanceToVehicle
     std::vector<std::vector<float>> getWaypoints(int index); // Return the next few waypoints that the vehicle can see
 
     // info to publish
