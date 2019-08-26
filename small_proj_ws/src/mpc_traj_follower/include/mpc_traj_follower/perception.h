@@ -10,6 +10,7 @@
 #include <hkj_msgs/VehicleState.h>
 #include <hkj_msgs/RoadConditionVector.h>
 #include <hkj_msgs/RoadCondition.h>
+#include <iostream>
 
 namespace mpc_traj_follower {
 
@@ -49,6 +50,8 @@ class Perception {
     std::vector<float> left_bound_wps_;         // left bound waypoints vector
     std::vector<float> right_bound_wps_;        // right bound waypoints vector
     std::vector<float> mid_line_wps_;           // middle line waypoints vector
+    void parseRoadMap(const std::string& roadmap);
+    void parseRoadMapLine(const std::string& line);
     // vehicle state
     bool new_veh_state_;                        // if a new vehicle state is received
     std::vector<float> received_veh_state_;     // vehicle state received from plant_model_node

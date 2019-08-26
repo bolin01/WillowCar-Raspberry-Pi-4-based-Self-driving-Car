@@ -4,6 +4,9 @@ namespace mpc_traj_follower {
 
 Perception::Perception(ros::NodeHandle& nh) : nh_(nh)
 {
+    // Preprocessing - read roadmap waypoints and obstacles
+    readRoadmapFromCSV();
+
     /* ROS */
     sub_cur_state_ = nh_.subscribe("/vehicle_states", 10, &Perception::vehicleStateCallback, this);
     pub_road_cond_ = nh_.advertise<hkj_msgs::RoadConditionVector>("/perception", 10);
@@ -34,7 +37,39 @@ bool Perception::readRoadmapFromCSV()
      *    1. read roadmap data (waypoints + obstacle) from a CSV file
      *    2. store the read information above into class member variables
      *    3. return true/flase (maybe set a flag indicating if perception prepared correctly)
-     * */ 
+     * */
+    std::string roadmap_file;
+    if (nh_.getParam("roadmap_file", roadmap_file))
+    {
+        ROS_INFO("Roadmap file:\n%s", roadmap_file.c_str());
+        // Roadmap format: bl_x, bl_y, br_x, br_y, bc_x, bc_y, theta
+        parseRoadMap(roadmap_file);
+    }
+    else
+        ROS_ERROR("Not able to find roadmap file.");
+
+}
+
+void Perception::parseRoadMap(const std::string& roadmap)
+{
+    // Parse the roadmap file and add waypoints
+    std::istringstream rm_stream(roadmap);
+    std::string line;
+    while (std::getline(rm_stream, line))
+        parseRoadMapLine(line);
+    ROS_INFO("Map parsed. We have %i waypoints", (int)waypoints_.size());
+    assert (waypoints_.size());
+}
+
+void Perception::parseRoadMapLine(const std::string& line)
+{
+    // Parse each line in roadmap file and add waypoint vector
+    std::istringstream line_stream(line);
+    std::string number;
+    std::vector<float> wp;
+    while (std::getline(line_stream, number, ','))
+        wp.push_back(std::stof(number));
+    waypoints_.push_back(wp);
 }
 
 bool Perception::preparePerceptionMsg(double pos_x, double pos_y, double yaw_ang)
