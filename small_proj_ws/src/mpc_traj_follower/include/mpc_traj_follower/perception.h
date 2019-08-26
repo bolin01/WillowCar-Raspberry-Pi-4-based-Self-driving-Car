@@ -35,7 +35,7 @@ class Perception {
      * prepare perception msg based on state feedback from plant_model_node
      * return true if perception msg is correctly prepared
      * */
-    bool preparePerceptionMsg(double pos_x, double pos_y, double yaw_ang);
+    bool preparePerceptionMsg();
     void publishPerceptionMsg();
 
   private:
@@ -53,6 +53,7 @@ class Perception {
     std::vector<float> mid_line_wps_;                // middle line waypoints vector
     void parseRoadMap(const std::string& roadmap);   // Read waypoints from roadmap file
     void parseRoadMapLine(const std::string& line);  // Helper function called in parseRoadMap
+
     // vehicle state
     bool new_veh_state_;                                    // if a new vehicle state is received
     std::vector<float> received_veh_state_;                 // vehicle state received from plant_model_node
@@ -63,6 +64,14 @@ class Perception {
     float distanceToVehicle(int index);                     // Helper function called in getNextWaypointIndex
     float distance(float x1, float y1, float x2, float y2); // Helper function called in distanceToVehicle
     std::vector<std::vector<float>> getWaypoints(int index); // Return the next few waypoints that the vehicle can see
+
+    // info to publish
+    std::vector<std::vector<float>> pub_bl_waypoints_;
+    std::vector<std::vector<float>> pub_br_waypoints_;
+    std::vector<std::vector<float>> pub_bc_waypoints_;
+    std::vector<std::vector<float>> pub_obs_x_;
+    std::vector<std::vector<float>> pub_obs_y_;
+
     // trajectory
     std::vector<std::vector<float>> states_traj_; 
     int traj_vt_size_;

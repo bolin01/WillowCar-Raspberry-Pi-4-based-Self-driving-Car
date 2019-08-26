@@ -63,4 +63,24 @@ void VehiclePlantModel::actuationCallback(const hkj_msgs::VehicleActuator::Const
     pub_cur_state_.publish(next_veh_state);
 }
 
+void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate)
+{   
+    /** TODO List: 
+     *    1. Check if the perception info is prepared
+     *    2. pack the perception info to be sent using a temp variable
+     * */ 
+    hkj_msgs::VehicleState vstate;
+    vstate.pos_x = pos_x;
+    vstate.pos_y = pos_y;
+    vstate.vel_x = vel_x;
+    vstate.vel_y = vel_y;
+    vstate.yaw_angle = yaw_angle;
+    vstate.yaw_rate = yaw_rate;
+
+    pub_cur_state_.publish(vstate);
+    ROS_INFO("Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
+}
+
+
+
 } /* end of namespace mpc_traj_follower */
