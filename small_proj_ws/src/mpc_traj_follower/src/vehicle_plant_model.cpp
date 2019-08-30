@@ -14,6 +14,9 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     state_vel_y_ = 0.0;
     state_yaw_ang_ = 0.0;
     state_yaw_rate_ = 0.0;
+    
+    // Initialize the car model
+    car = Bicycle6();
 
     states_traj_.push_back( std::vector<float>(6, 0.0) ); // push a 6-element all-zero vector into states_traj_
     traj_vt_size_ = 1;

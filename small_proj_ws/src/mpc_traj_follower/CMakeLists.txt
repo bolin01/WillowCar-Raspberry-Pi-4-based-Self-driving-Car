@@ -124,6 +124,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/mpc_traj_follower.cpp
 # )
+add_library(Bicycle6 src/Bicycle6.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -156,6 +157,7 @@ target_link_libraries(pnc
 
 target_link_libraries(vehicle_plant_model
   ${catkin_LIBRARIES}
+  Bicycle6
 )
 
 target_link_libraries(perception

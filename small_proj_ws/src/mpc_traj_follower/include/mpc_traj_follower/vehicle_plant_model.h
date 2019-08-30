@@ -9,6 +9,7 @@
 #include <vector>
 #include <hkj_msgs/VehicleState.h>
 #include <hkj_msgs/VehicleActuator.h>
+#include <Vehicle/Bicycle6.h>
 
 namespace mpc_traj_follower {
 
@@ -43,8 +44,10 @@ class VehiclePlantModel {
 
     /* Params */
     // TODO: construct a 6-DOF bicycle model as the vehicle plant model
-
     void actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg);
+
+    // Vehicle Model - template can be used when we have multiple vehicle models
+    Bicycle6 car;
 };
 
 
