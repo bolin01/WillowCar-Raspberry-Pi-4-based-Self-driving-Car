@@ -18,7 +18,7 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     // Initialize the car model
     car = Bicycle6();
 
-    states_traj_.push_back( std::vector<float>(6, 0.0) ); // push a 6-element all-zero vector into states_traj_
+    states_traj_.push_back(std::vector<float>(6, 0.0)); // push a 6-element all-zero vector into states_traj_
     traj_vt_size_ = 1;
 
     ROS_INFO("Initialized vehicle_plant_model_node!");
@@ -84,6 +84,26 @@ void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x,
     ROS_INFO("Plant - Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
 }
 
+void VehiclePlantModel::integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1)
+{
+    std::vector<double> states;
+    states.push_back(state_pos_x_);
+    states.push_back(state_vel_x_);
+    states.push_back(state_pos_y_);
+    states.push_back(state_vel_y_);
+    states.push_back(state_yaw_ang_);
+    states.push_back(state_yaw_rate_);
 
+    // Integration
+    double dt = car.set_input(steers, forces, t0, t1);
+    boost::numeric::odeint::integrate(car, states, t0, t1, dt);  // We can add an observer here for more outputs
+
+    state_pos_x_ = states[0];
+    state_vel_x_ = states[1];
+    state_pos_x_ = states[2];
+    state_vel_x_ = states[3];
+    state_pos_x_ = states[4];
+    state_vel_x_ = states[5];
+}
 
 } /* end of namespace mpc_traj_follower */

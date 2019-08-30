@@ -48,6 +48,7 @@ class VehiclePlantModel {
 
     // Vehicle Model - template can be used when we have multiple vehicle models
     Bicycle6 car;
+    void integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1);
 };
 
 
