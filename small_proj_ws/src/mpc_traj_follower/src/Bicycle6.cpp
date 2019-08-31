@@ -37,7 +37,7 @@ Bicycle6::Bicycle6()
     t1 = 0.00;
 }
 
-double Bicycle6::set_input(std::vector<double> steer, std::vector<double> force, double t0, double t1)
+double Bicycle6::setInput(std::vector<double> steer, std::vector<double> force, double t0, double t1)
 {
     /* ODEINT does not support control input.
        The input here is stores in system Bicycle6.
@@ -75,7 +75,7 @@ double Bicycle6::set_input(std::vector<double> steer, std::vector<double> force,
     return this->dt;
 }
 
-void Bicycle6::compute_x_dot(const std::vector<double> &x , std::vector<double> &dxdt , const double t)
+void Bicycle6::ComputeXDot(const std::vector<double> &x , std::vector<double> &dxdt , const double t)
 {
     double x_i = x[0], u_i = x[1], y_i = x[2], v_i = x[3], phi_i = x[4], r_i = x[5];
     double alpha_f, alpha_r, steer_i, force_i;
@@ -89,8 +89,8 @@ void Bicycle6::compute_x_dot(const std::vector<double> &x , std::vector<double> 
     // Compute alpha_f and alpha_r
     alpha_f = steer_i - atan2(v_i+a*r_i, u_i);
     alpha_r = -atan2(v_i-b*r_i, u_i);
-    alpha_f = rad2deg(alpha_f);
-    alpha_r = rad2deg(alpha_r);
+    alpha_f = Rad2Deg(alpha_f);
+    alpha_r = Rad2Deg(alpha_r);
 
     // Compute phi_yf and phi_yr
     double phi_yf, phi_yr;
@@ -111,4 +111,4 @@ void Bicycle6::compute_x_dot(const std::vector<double> &x , std::vector<double> 
     dxdt[5] = 1/Iz*(a*Fyf*cos(steer_i)-b*Fyr);
 }
 
-}
+} /* end of namespace mpc_traj_follower */
