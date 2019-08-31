@@ -6,12 +6,11 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
 
     mpc_traj_follower::VehiclePlantModel vehicle_plant_model_node(nh);
-    ros::Rate loop_rate(0.1);
+    ros::Rate loop_rate(1);
 
     // This is for testing only. We'll not call publishVehicleMsg explicitly when this node is finished.
-    while ( ros::ok() )
+    while (ros::ok())
     {
-        vehicle_plant_model_node.publishVehicleMsg(287.39, -178.82, 0, 0, 1.9603, 0);
         ros::spinOnce();
         loop_rate.sleep();
     }

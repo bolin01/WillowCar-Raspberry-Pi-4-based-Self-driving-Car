@@ -7,12 +7,10 @@ int main(int argc, char** argv)
 
     mpc_traj_follower::Perception perception_node(nh);
 
-    // Explicitly control the perception node work at 40 Hz
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(5);
 
-    while ( ros::ok() )
+    while (ros::ok())
     {
-        perception_node.publishPerceptionMsg();
         ros::spinOnce();
         loop_rate.sleep();
     }

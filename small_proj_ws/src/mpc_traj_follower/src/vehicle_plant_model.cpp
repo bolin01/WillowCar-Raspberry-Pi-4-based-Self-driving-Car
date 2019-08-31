@@ -5,20 +5,33 @@ namespace mpc_traj_follower {
 VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
 {   
     /* ROS */
-    sub_actuation_ = nh_.subscribe("/actuation", 10, &VehiclePlantModel::actuationCallback, this);     // receive from pnc_node
-    pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish to pnc_node and perception_node
+    // sub_actuation_ = nh_.subscribe("/actuation", 10, &VehiclePlantModel::actuationCallback, this);     // receive from pnc_node
+    // pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish to pnc_node and perception_node
     
-    state_pos_x_ = 0.0;
-    state_pos_y_ = 0.0;
-    state_vel_x_ = 0.0;
-    state_vel_y_ = 0.0;
-    state_yaw_ang_ = 0.0;
-    state_yaw_rate_ = 0.0;
+    // For testing, subscribe to perception node
+    sub_actuation_ = nh_.subscribe("/perception", 10, &VehiclePlantModel::perceptionCallback, this);
+    pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish perception_node
 
-    states_traj_.push_back( std::vector<float>(6, 0.0) ); // push a 6-element all-zero vector into states_traj_
+    state_pos_x_    =  287;
+    state_pos_y_    = -176;
+    state_vel_x_    =  5;
+    state_vel_y_    =  0;
+    state_yaw_ang_  =  2;
+    state_yaw_rate_ =  0;
+    state_time      =  0;
+    nh_.getParam("integration_dt", dt);
+    
+    // Initialize the car model
+    car = Bicycle6();
+
+    states_traj_.push_back(std::vector<float>(6, 0.0)); // push a 6-element all-zero vector into states_traj_
     traj_vt_size_ = 1;
 
     ROS_INFO("Initialized vehicle_plant_model_node!");
+    
+    while (pub_cur_state_.getNumSubscribers() == 0)
+        ROS_INFO("Plant - Waiting for subscriber.");
+    publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);
 }
 
 VehiclePlantModel::~VehiclePlantModel() {}
@@ -81,6 +94,46 @@ void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x,
     ROS_INFO("Plant - Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
 }
 
+void VehiclePlantModel::integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1)
+{
+    std::vector<double> states;
+    states.push_back(state_pos_x_);
+    states.push_back(state_vel_x_);
+    states.push_back(state_pos_y_);
+    states.push_back(state_vel_y_);
+    states.push_back(state_yaw_ang_);
+    states.push_back(state_yaw_rate_);
 
+    // Integration
+    double step = car.set_input(steers, forces, t0, t1);
+    boost::numeric::odeint::integrate(car, states, t0, t1, step);  // We can add an observer here for more outputs
+
+    // update state variable
+    state_pos_x_ = states[0];
+    state_vel_x_ = states[1];
+    state_pos_y_ = states[2];
+    state_vel_y_ = states[3];
+    state_yaw_ang_ = states[4];
+    state_yaw_rate_ = states[5];
+}
+
+void VehiclePlantModel::perceptionCallback(const hkj_msgs::RoadConditionVector::ConstPtr& msg)
+{
+    // This function is used for testing only.
+    // It assumes the plant subscribes perception and see the integration is triggered properly.
+    // When pnc node is ready, plant should subscribe it and use the actuation callback instead.
+    ROS_INFO("Plant - Receive message from perception.");
+
+    // dummy inputs. Use states from previous step
+    std::vector<double> steers = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+    std::vector<double> forces = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+    
+
+    // Integrate
+    integrate(steers, forces, state_time, state_time+dt);
+    state_time += dt;
+
+    publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);    
+}
 
 } /* end of namespace mpc_traj_follower */
