@@ -17,9 +17,7 @@ Perception::Perception(ros::NodeHandle& nh) : nh_(nh)
 Perception::~Perception() {}
 
 void Perception::vehicleStateCallback(const hkj_msgs::VehicleState::ConstPtr& msg)
-{
-    mtx.lock();
-    
+{   
     // clear stored vehicle state data
     clearVehicleState();
 
@@ -34,10 +32,8 @@ void Perception::vehicleStateCallback(const hkj_msgs::VehicleState::ConstPtr& ms
     state_pos_y_ = msg->pos_y;
     state_yaw_ang_ = msg->yaw_angle;
 
-    // Prepare pub message
-    preparePerceptionMsg();
-    mtx.unlock();
     ROS_INFO("Perception - Vehicle states updated.");
+    publishPerceptionMsg();
 }
 
 bool Perception::readRoadmapFromCSV()
@@ -50,7 +46,7 @@ bool Perception::readRoadmapFromCSV()
     std::string roadmap_file;
     if (nh_.getParam("roadmap_file", roadmap_file))
     {
-        ROS_INFO("Perception - Roadmap file:\n%s", roadmap_file.c_str());
+        // ROS_INFO("Perception - Roadmap file:\n%s", roadmap_file.c_str());
         // Roadmap format: bl_x, bl_y, br_x, br_y, bc_x, bc_y, theta
         parseRoadMap(roadmap_file);
     }
@@ -146,6 +142,7 @@ bool Perception::preparePerceptionMsg()
      *    2. store the found information above into class member variables
      *    3. return true/flase (maybe set a flag indicating if perception prepared correctly)
      * */
+    clearPerception();
     int wp_index = getNextWaypointIndex();
     auto waypoints = getWaypoints(wp_index);
     // Add it to class members
@@ -167,7 +164,7 @@ void Perception::publishPerceptionMsg()
     /**   1. Publish the waypoints - Done
      *    2. Publish obstacles - To do
      * */
-    mtx.lock();     
+    preparePerceptionMsg();     
 
     hkj_msgs::RoadConditionVector perception_msg;
 
@@ -191,7 +188,6 @@ void Perception::publishPerceptionMsg()
 
     pub_road_cond_.publish(perception_msg);
     ROS_INFO("Perception - Perception msg has been published!");
-    mtx.unlock();
 }
 
 // clear previous stored perception data
