@@ -39,22 +39,22 @@ class VehiclePlantModel {
     float state_vel_y_;                           // state: global velocity y  [m/s]
     float state_yaw_ang_;                         // state: yaw andgle         [rad]
     float state_yaw_rate_;                        // state: yaw rate           [rad/s]
-    float state_time;                             // state: time               [s]
-    float dt;                                     // integration interval      [s]  
+    float state_time_;                            // state: time               [s]
+    float dt_;                                    // integration interval      [s]  
     // trajectory
     std::vector<std::vector<float>> states_traj_; // trajectory of states
     int traj_vt_size_;
 
     /* Params */
-    // TODO: construct a 6-DOF bicycle model as the vehicle plant model
     void actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg);
 
     // perception callback, for testing only...
     void perceptionCallback(const hkj_msgs::RoadConditionVector::ConstPtr& msg);
 
-    // Vehicle Model - template can be used when we have multiple vehicle models
+    // Vehicle plant model
+    // TODO: expand it with a generic template when dealing with multiple vehicle models
     Bicycle6 car;
-    void integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1);
+    void Integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1);
 };
 
 
