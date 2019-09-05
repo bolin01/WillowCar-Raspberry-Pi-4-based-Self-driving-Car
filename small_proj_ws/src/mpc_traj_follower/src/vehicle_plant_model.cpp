@@ -18,8 +18,8 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     state_vel_y_    =  0;
     state_yaw_ang_  =  2;
     state_yaw_rate_ =  0;
-    state_time      =  0;
-    nh_.getParam("integration_dt", dt);
+    state_time_     =  0;
+    nh_.getParam("integration_dt", dt_);
     
     // Initialize the car model
     car = Bicycle6();
@@ -94,7 +94,7 @@ void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x,
     ROS_INFO("Plant - Vehicle state published: x = %f, y = %f, yaw_angle = %f", pos_x, pos_y, yaw_angle);
 }
 
-void VehiclePlantModel::integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1)
+void VehiclePlantModel::Integrate(std::vector<double> steers, std::vector<double> forces, double t0, double t1)
 {
     std::vector<double> states;
     states.push_back(state_pos_x_);
@@ -105,7 +105,7 @@ void VehiclePlantModel::integrate(std::vector<double> steers, std::vector<double
     states.push_back(state_yaw_rate_);
 
     // Integration
-    double step = car.set_input(steers, forces, t0, t1);
+    double step = car.setInput(steers, forces, t0, t1);
     boost::numeric::odeint::integrate(car, states, t0, t1, step);  // We can add an observer here for more outputs
 
     // update state variable
@@ -125,13 +125,12 @@ void VehiclePlantModel::perceptionCallback(const hkj_msgs::RoadConditionVector::
     ROS_INFO("Plant - Receive message from perception.");
 
     // dummy inputs. Use states from previous step
-    std::vector<double> steers = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    std::vector<double> forces = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    
+    std::vector<double> steers(11, 0.0);
+    std::vector<double> forces(11, 0.0);
 
     // Integrate
-    integrate(steers, forces, state_time, state_time+dt);
-    state_time += dt;
+    Integrate(steers, forces, state_time_, state_time_ + dt_);
+    state_time_ += dt_;
 
     publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);    
 }

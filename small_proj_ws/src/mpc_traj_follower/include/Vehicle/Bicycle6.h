@@ -1,3 +1,6 @@
+#ifndef BICYCLE_6_H
+#define BICYCLE_6_H
+
 #include <vector>
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
@@ -5,7 +8,7 @@
 
 namespace mpc_traj_follower {
     
-class Bicycle6
+struct Bicycle6
 {
 public:
     // Constructor and Destrucor
@@ -18,11 +21,11 @@ public:
     // Define operator(). Object called by integrator.
     void operator() (const std::vector<double> &x , std::vector<double> &dxdt , const double t)
     {
-        compute_x_dot(x, dxdt, t);
+        ComputeXDot(x, dxdt, t);
     }
 
     // Set input u. See comments in definition.
-    double set_input(std::vector<double> steer, std::vector<double> force, double t0, double t1);   
+    double setInput(std::vector<double> steer, std::vector<double> force, double t0, double t1);   
 
 private:
     // Vehicle parameters
@@ -52,10 +55,13 @@ private:
     std::vector<double> force_limit;
 
     // History of integration
-    std::vector<std::vector<double>> hist;  // [[x_i, u_i, y_i, v_i, phi_i, r_i],...]
+    std::vector<std::vector<double>> hist;  // [[x_i, u_i, y_i, v_i, phi_i, r_i], ...]
 
     // Helper Functions
-    double rad2deg(double ang) {return ang*180.0/M_PI;}  // Radian to degree
-    void compute_x_dot(const std::vector<double> &x , std::vector<double> &dxdt , const double t);  // Called in operator ()
+    double Rad2Deg(double ang) { return ang * 180.0 / M_PI; }  // Radian to degree
+    void ComputeXDot(const std::vector<double> &x , std::vector<double> &dxdt , const double t);  // Called in operator ()
 };
-}
+
+} /* end of namespace mpc_traj_follower */
+
+#endif /* BICYCLE_6_H */
