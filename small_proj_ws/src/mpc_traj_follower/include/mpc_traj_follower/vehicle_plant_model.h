@@ -11,6 +11,7 @@
 #include <hkj_msgs/VehicleActuator.h>
 #include <Vehicle/Bicycle6.h>
 #include <hkj_msgs/RoadConditionVector.h>  // For testing only... should be removed once pnc node is ready
+#include <std_msgs/Float32.h>
 
 namespace mpc_traj_follower {
 

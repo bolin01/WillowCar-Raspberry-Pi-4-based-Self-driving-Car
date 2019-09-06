@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 
     mpc_traj_follower::Perception perception_node(nh);
 
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(2);
 
     while (ros::ok())
     {
