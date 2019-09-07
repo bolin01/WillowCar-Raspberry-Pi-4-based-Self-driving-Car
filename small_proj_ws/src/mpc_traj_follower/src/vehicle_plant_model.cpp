@@ -16,7 +16,7 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     state_pos_y_    = -176;
     state_vel_x_    =  5;
     state_vel_y_    =  0;
-    state_yaw_ang_  =  2;
+    state_yaw_ang_  =  1.90;
     state_yaw_rate_ =  0;
     state_time_     =  0;
     nh_.getParam("integration_dt", dt_);
@@ -27,10 +27,10 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     states_traj_.push_back(std::vector<float>(6, 0.0)); // push a 6-element all-zero vector into states_traj_
     traj_vt_size_ = 1;
 
+    while (pub_cur_state_.getNumSubscribers() < 2)
+        continue;
     ROS_INFO("Initialized vehicle_plant_model_node!");
     
-    while (pub_cur_state_.getNumSubscribers() == 0)
-        ROS_INFO("Plant - Waiting for subscriber.");
     publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);
 }
 
