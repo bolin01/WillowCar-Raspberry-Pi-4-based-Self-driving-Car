@@ -11,7 +11,7 @@ Perception::Perception(ros::NodeHandle& nh) : nh_(nh)
     sub_cur_state_ = nh_.subscribe("/vehicle_states", 10, &Perception::vehicleStateCallback, this);
     pub_road_cond_ = nh_.advertise<hkj_msgs::RoadConditionVector>("/perception", 10);
 
-    while (pub_road_cond_.getNumSubscribers() == 0)
+    while (pub_road_cond_.getNumSubscribers() < 1)
         continue;
     ROS_INFO("Perception - Initialized perception_node!");
 }
@@ -20,13 +20,7 @@ Perception::~Perception() {}
 
 void Perception::vehicleStateCallback(const hkj_msgs::VehicleState::ConstPtr& msg)
 {   
-    // Get vehicle state from msg
-    double x = msg->pos_x, y = msg->pos_y, yaw = msg->yaw_angle;
-    ROS_INFO("Perception - Vehicle states updated.");
-
-    hkj_msgs::RoadConditionVector perception_msg = preparePerceptionMsg(x, y);
-
-    // When publish msg, we must make sure that every topic has a subscriber
+    hkj_msgs::RoadConditionVector perception_msg = preparePerceptionMsg(msg);
     pub_road_cond_.publish(perception_msg);
     ROS_INFO("Perception - Perception msg has been published!");
 }
@@ -110,7 +104,6 @@ int Perception::getNextWaypointIndex(double x, double y)
 
 std::vector<std::vector<float>> Perception::getWaypoints(int index)
 {
-    ROS_INFO("Call getWaypoints");
     double distance_can_see;
     nh_.getParam("distance_can_see", distance_can_see);
     double dist = 0.0;
@@ -128,19 +121,19 @@ std::vector<std::vector<float>> Perception::getWaypoints(int index)
         
         wp.push_back(wp1);
     }
-    ROS_INFO("Call getWaypoints done");
     return wp;
 }
 
-// hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(double x, double y)
-hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(double x, double y)
+hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(const hkj_msgs::VehicleState::ConstPtr& msg)
 {
     /** TODO List: 
      *    1. find an apropriate range of road condition waypoints & obstacle sets
      *    2. store the found information above into class member variables
      *    3. return true/flase (maybe set a flag indicating if perception prepared correctly)
      * */
-    int index = getNextWaypointIndex(x, y);
+
+    // Get vehicle state from msg
+    int index = getNextWaypointIndex(msg->pos_x, msg->pos_y);
     std::vector<std::vector<float>> wp = getWaypoints(index);
     hkj_msgs::RoadConditionVector perception_msg;
 
@@ -154,6 +147,14 @@ hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(double x, double 
     }
 
     // Need to add obstacle info
+
+    // Add vehicle states
+    perception_msg.pos_x = msg->pos_x;
+    perception_msg.pos_y = msg->pos_y;
+    perception_msg.vel_x = msg->vel_x;
+    perception_msg.pos_y = msg->pos_y;
+    perception_msg.yaw_angle = msg->yaw_angle;
+    perception_msg.yaw_rate = msg->yaw_rate;
     return perception_msg;
 }
 } /* end of namespace mpc_traj_follower */

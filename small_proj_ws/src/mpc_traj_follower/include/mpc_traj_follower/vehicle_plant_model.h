@@ -22,6 +22,7 @@ class VehiclePlantModel {
 
     // Publish vehicle state - It is made public only for testing purpose
     void publishVehicleMsg(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate);
+    void setState(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate);
   
   private:
     /* ROS */
@@ -48,9 +49,6 @@ class VehiclePlantModel {
 
     /* Params */
     void actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg);
-
-    // perception callback, for testing only...
-    void perceptionCallback(const hkj_msgs::RoadConditionVector::ConstPtr& msg);
 
     // Vehicle plant model
     // TODO: expand it with a generic template when dealing with multiple vehicle models
