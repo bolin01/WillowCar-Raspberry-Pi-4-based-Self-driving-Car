@@ -37,7 +37,7 @@ class Perception {
      * prepare perception msg based on state feedback from plant_model_node
      * return true if perception msg is correctly prepared
      * */
-    hkj_msgs::RoadConditionVector preparePerceptionMsg(double x, double y);
+    hkj_msgs::RoadConditionVector preparePerceptionMsg(const hkj_msgs::VehicleState::ConstPtr& msg);
     void publishPerceptionMsg();
 
   private:

@@ -47,6 +47,8 @@ class Visualiser:
         ax.axis([l_x,u_x,l_y,u_y])
         ax.plot(left_x, left_y, "b-")
         ax.plot(right_x, right_y, "b-")
+        fig.canvas.draw()
+        plt.pause(1e-3)
         return fig, ax
     
     def callback(self, data):

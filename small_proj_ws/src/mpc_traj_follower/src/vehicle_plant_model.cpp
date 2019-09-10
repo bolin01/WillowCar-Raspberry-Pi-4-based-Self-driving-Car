@@ -9,7 +9,7 @@ VehiclePlantModel::VehiclePlantModel(ros::NodeHandle& nh) : nh_(nh)
     // pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish to pnc_node and perception_node
     
     // For testing, subscribe to perception node
-    sub_actuation_ = nh_.subscribe("/perception", 10, &VehiclePlantModel::perceptionCallback, this);
+    sub_actuation_ = nh_.subscribe("/vehicle_actuator", 10, &VehiclePlantModel::actuationCallback, this);
     pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish perception_node
 
     state_pos_x_    =  287;
@@ -38,42 +38,11 @@ VehiclePlantModel::~VehiclePlantModel() {}
 
 void VehiclePlantModel::actuationCallback(const hkj_msgs::VehicleActuator::ConstPtr& msg)
 {
-    float applied_force = msg->applied_force;
-    float steer_angle   = msg->steer_angle;
-    
-    /** [Psudo code]
-     * 
-     *  State(t + 1) = F( State(t), Actuation(t + 1) );
-     *  next_state = std::vector<float>{};
-     *  for ( auto& elem : State(t + 1) )
-     *      next_state.push_back(elem);
-     * 
-     *  state_pos_x_   = State(t + 1)[0];
-     *  state_pos_y_   = State(t + 1)[1];
-     *  ......
-     *  ......
-     *  ......
-     *  state_yaw_rate = State(t + 1)[5];
-     * 
-     * */
+    // Integrate
+    Integrate(msg->steer_angle, msg->applied_force, state_time_, state_time_ + dt_);
+    state_time_ += dt_;
 
-    std::vector<float> next_state;
-    states_traj_.push_back(next_state);
-    traj_vt_size_++;
-
-    if (traj_vt_size_ == 0) 
-        return;
-
-    // parse info into next_veh_state and publish
-    hkj_msgs::VehicleState next_veh_state;
-    next_veh_state.pos_x      = states_traj_.back()[0];
-    next_veh_state.pos_y      = states_traj_.back()[1];
-    next_veh_state.vel_x      = states_traj_.back()[2];
-    next_veh_state.vel_y      = states_traj_.back()[3];
-    next_veh_state.yaw_angle  = states_traj_.back()[4];
-    next_veh_state.yaw_rate   = states_traj_.back()[5];
-
-    pub_cur_state_.publish(next_veh_state);
+    publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);
 }
 
 void VehiclePlantModel::publishVehicleMsg(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate)
@@ -117,22 +86,16 @@ void VehiclePlantModel::Integrate(std::vector<double> steers, std::vector<double
     state_yaw_rate_ = states[5];
 }
 
-void VehiclePlantModel::perceptionCallback(const hkj_msgs::RoadConditionVector::ConstPtr& msg)
+void VehiclePlantModel::setState(float pos_x, float pos_y, float vel_x, float vel_y, float yaw_angle, float yaw_rate)
 {
-    // This function is used for testing only.
-    // It assumes the plant subscribes perception and see the integration is triggered properly.
-    // When pnc node is ready, plant should subscribe it and use the actuation callback instead.
-    ROS_INFO("Plant - Receive message from perception.");
+    // Set the initial condition
+    assert (state_time_ < 1e-6);
 
-    // dummy inputs. Use states from previous step
-    std::vector<double> steers(11, 0.0);
-    std::vector<double> forces(11, 0.0);
-
-    // Integrate
-    Integrate(steers, forces, state_time_, state_time_ + dt_);
-    state_time_ += dt_;
-
-    publishVehicleMsg(state_pos_x_, state_pos_y_, state_vel_x_, state_vel_y_, state_yaw_ang_, state_yaw_rate_);    
+    state_pos_x_ = pos_x;
+    state_vel_x_ = vel_x;
+    state_pos_y_ = pos_y;
+    state_vel_y_ = vel_y;
+    state_yaw_ang_ = yaw_angle;
+    state_yaw_rate_ = yaw_rate; 
 }
-
 } /* end of namespace mpc_traj_follower */
