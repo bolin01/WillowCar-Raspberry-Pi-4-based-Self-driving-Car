@@ -126,6 +126,7 @@ include_directories(
 #   src/${PROJECT_NAME}/mpc_traj_follower.cpp
 # )
 add_library(Bicycle6 src/Bicycle6.cpp)
+add_library(BicycleKinematic src/BicycleKinematic.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -136,7 +137,8 @@ add_library(Bicycle6 src/Bicycle6.cpp)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(pnc src/pnc.cpp src/pnc_node.cpp)
-add_executable(vehicle_plant_model src/vehicle_plant_model.cpp src/vehicle_plant_model_node.cpp)
+## add_executable(vehicle_plant_model src/vehicle_plant_model.cpp src/vehicle_plant_model_node.cpp)
+add_executable(vehicle_plant_model src/kinematic_plant_model.cpp src/vehicle_plant_model_node.cpp)
 add_executable(perception src/perception.cpp src/perception_node.cpp)
 
 ## Rename C++ executable without prefix
@@ -159,6 +161,7 @@ target_link_libraries(pnc
 target_link_libraries(vehicle_plant_model
   ${catkin_LIBRARIES}
   Bicycle6
+  BicycleKinematic
 )
 
 target_link_libraries(perception
