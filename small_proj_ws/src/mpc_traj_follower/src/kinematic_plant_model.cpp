@@ -8,10 +8,11 @@ KinematicPlantModel::KinematicPlantModel(ros::NodeHandle& nh) : nh_(nh)
     sub_actuation_ = nh_.subscribe("/vehicle_actuator", 10, &KinematicPlantModel::actuationCallback, this);
     pub_cur_state_ = nh_.advertise<hkj_msgs::VehicleState>("/vehicle_states", 10);   // publish perception_node
 
-    state_x_        =  287;
-    state_y_        = -176;
-    state_v_        =  5;
-    state_yaw_ang_  =  1.90;
+    // Get initial condition from parameters
+    nh.getParam("pos_x", state_x_);
+    nh.getParam("pos_y", state_y_);
+    nh.getParam("vel", state_v_);
+    nh.getParam("yaw", state_yaw_ang_);
     state_time_     =  0;
     nh_.getParam("integration_dt", dt_);
     

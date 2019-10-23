@@ -30,14 +30,15 @@ class Perception {
 
     /** [Objective]
      * read offline roadmap info from CSV file
-     * return true if roadmap info is correctly obtained
      * */
-    bool readRoadmapFromCSV();
+    void readRoadmapFromCSV();
+
     /** [Objective]
      * prepare perception msg based on state feedback from plant_model_node
      * return true if perception msg is correctly prepared
      * */
     hkj_msgs::RoadConditionVector preparePerceptionMsg(const hkj_msgs::VehicleState::ConstPtr& msg);
+    
     void publishPerceptionMsg();
 
   private:
