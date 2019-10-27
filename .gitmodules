@@ -1,3 +1,0 @@
-[submodule "small_proj_ws/odeAdjoint"]
-	path = small_proj_ws/odeAdjoint
-	url = https://github.com/zhuyanhao/odeAdjoint.git
