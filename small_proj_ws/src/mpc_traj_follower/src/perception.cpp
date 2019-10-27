@@ -145,7 +145,6 @@ hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(const hkj_msgs::V
     perception_msg.pos_x = msg->pos_x;
     perception_msg.pos_y = msg->pos_y;
     perception_msg.vel_x = msg->vel_x;
-    perception_msg.pos_y = msg->pos_y;
     perception_msg.yaw_angle = msg->yaw_angle;
     perception_msg.yaw_rate = msg->yaw_rate;
     return perception_msg;
