@@ -138,6 +138,7 @@ hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(const hkj_msgs::V
         road_condition.c_wp   = {wp[i][4], wp[i][5]};
         road_condition.rc_wp  = {wp[i][6], wp[i][7]};
         road_condition.rb_wp  = {wp[i][8], wp[i][9]};
+        road_condition.theta  = wp[i][10];
         perception_msg.road_condition_vt.push_back(road_condition);
     }
 
