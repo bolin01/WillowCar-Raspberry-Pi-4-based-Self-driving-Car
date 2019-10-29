@@ -227,12 +227,12 @@ class Vehicle1(Ode1stExplicit):
     def obj(self, p, states):
         self.p = p
         self.computeValue(0, self.dt, states)
-        return 1e6 * self.z[0] + 1e6 * self.z[1]
+        return 1e4 * self.z[0] + 1e3 * self.z[1]
     
     def obj_jac(self, p, states):
         self.p = p
         self.computeSensitivity(0, self.dt, states)
-        return 1e3 * self.dzdp[0] + 1e3 * self.dzdp[1]
+        return 1e4 * self.dzdp[0] + 1e3 * self.dzdp[1]
 
 if __name__ == "__main__":
     rospy.init_node("Track1 Planner", disable_signals=True)
