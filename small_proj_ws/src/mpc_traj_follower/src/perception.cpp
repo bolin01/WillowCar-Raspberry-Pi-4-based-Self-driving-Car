@@ -138,6 +138,7 @@ hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(const hkj_msgs::V
         road_condition.c_wp   = {wp[i][4], wp[i][5]};
         road_condition.rc_wp  = {wp[i][6], wp[i][7]};
         road_condition.rb_wp  = {wp[i][8], wp[i][9]};
+        road_condition.theta  = wp[i][10];
         perception_msg.road_condition_vt.push_back(road_condition);
     }
 
@@ -145,7 +146,6 @@ hkj_msgs::RoadConditionVector Perception::preparePerceptionMsg(const hkj_msgs::V
     perception_msg.pos_x = msg->pos_x;
     perception_msg.pos_y = msg->pos_y;
     perception_msg.vel_x = msg->vel_x;
-    perception_msg.pos_y = msg->pos_y;
     perception_msg.yaw_angle = msg->yaw_angle;
     perception_msg.yaw_rate = msg->yaw_rate;
     return perception_msg;
