@@ -6,6 +6,9 @@
 ### 3D Printing 
 ### Assembly
 
+## Raspberry Pi 4 Setup
+### Steering and Motor Module
+
 ## Perception 
 
 ## Control and Planning 
