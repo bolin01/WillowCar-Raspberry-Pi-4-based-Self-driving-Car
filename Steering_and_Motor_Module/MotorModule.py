@@ -1,3 +1,4 @@
+# Code to initialize and control speed and direction of the rear wheel motor in WillowCar
 import RPi.GPIO as GPIO
 from time import sleep
 GPIO.setmode(GPIO.BCM)
