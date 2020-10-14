@@ -1,4 +1,4 @@
-# Self-driving_Planning_and_Control
+# WillowCar
 
 ## UMich ME599: Self-drivng Car Material
 The project is based on course project of ME599: Self-driving Car at University of Michigan, Ann Arbor. The course project consists of two tasks:   
