@@ -1,3 +1,4 @@
+# Code to initialize and control Steering Wheel Angle (SWA) of WillowCar
 from time import sleep
 import pigpio # Get rid of gitter problem when using GPIO, http://abyz.me.uk/rpi/pigpio/index.html
 
